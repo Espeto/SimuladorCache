@@ -15,7 +15,7 @@ import java.util.Random;
 public abstract class Cache {
 
     private BlockMem _cache_blocks[][];
-    private boolean _val[];
+    private int _val[];
     private int _tag[];
     private int _nblock; //Numero de blocos na cache
     private int _nsets; //Numero de entradas na cache
@@ -31,7 +31,7 @@ public abstract class Cache {
         _ass = 1;
         _nsets = _nblock / _ass;
         _bsize = 4;
-        _val = new boolean[_nsets];
+        _val = new int[_nsets];
         _tag = new int[_nsets];
         _cache_blocks = new BlockMem[_nblock / _ass][_ass];
         calcBits();
@@ -43,7 +43,7 @@ public abstract class Cache {
         _ass = ass;
         _nsets = _nblock / _ass;
         _bsize = bsize;
-        _val = new boolean[_nsets];
+        _val = new int[_nsets];
         _tag = new int[_nsets];
         _cache_blocks = new BlockMem[_nblock / _ass][_ass];
         calcBits();
@@ -51,7 +51,7 @@ public abstract class Cache {
 
     private void startValidade() {
         for (int i = 0; i < _nsets; i++) {
-            _val[i] = false;
+            _val[i] = 0;
         }
     }
 
@@ -72,7 +72,7 @@ public abstract class Cache {
         int tag = (end / (_nbits_offset + _nbits_indice));
         
         //O que fazer depois de possui o indice e tag na escrita?
-        if (_val[indice]) {
+        if (_val[indice] == 0) {
             
         }
     }

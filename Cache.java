@@ -16,7 +16,7 @@ import java.util.Random;
 public abstract class Cache {
 
     private BlockMem _cache_blocks[][];
-    private int _val[];
+    private int _val[][];
     private int _tag[];
     private int _nblock; //Numero de blocos na cache
     private int _nsets; //Numero de entradas na cache
@@ -51,9 +51,9 @@ public abstract class Cache {
         _ass = ass;
         _nsets = _nblock / _ass; //A partir do número de blocos na cache é calculado o número de sets.
         _bsize = bsize;
-        _val = new int[_nsets];
+        _val = new int[_nsets][_ass];
         _tag = new int[_nsets];
-        _cache_blocks = new BlockMem[_nblock / _ass][_ass];
+        _cache_blocks = new BlockMem[_nsets][_ass];
         calcBits();
     }
 
@@ -61,7 +61,9 @@ public abstract class Cache {
     //Associatividade > 1 -> _val = Matriz
     private void startValidade() {
         for (int i = 0; i < _nsets; i++) {
-            _val[i] = 0;
+            for (int j = 0; j < _ass; j++) {
+                _val[i][j] = 0;
+            }
         }
     }
 
@@ -79,6 +81,7 @@ public abstract class Cache {
         int indice = (end / _nbits_offset) & (2 ^ (_nbits_indice - 1));
         int tag = (end / (_nbits_offset + _nbits_indice));
         
+        //Alterar lógica para matriz
         if (_val[indice] == 0) {
             //Gera miss compulsorio
         }
@@ -98,7 +101,8 @@ public abstract class Cache {
     private void write(int end) {
         int indice = (end / _nbits_offset) & (2 ^ (_nbits_indice - 1));
         int tag = (end / (_nbits_offset + _nbits_indice));
-
+        
+        //Alterar lógica para matriz
         if (_val[indice] == 0) {
 
         }

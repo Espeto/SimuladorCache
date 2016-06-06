@@ -5,19 +5,16 @@
  */
 package simuladorcache;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Scanner;
 
 /**
  *
- * @author jaqueline
+ * @author Gilberto Kreisler
+ * @author Leticia Sampaio
  */
 public class SimuladorCache {
 
@@ -25,13 +22,15 @@ public class SimuladorCache {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String _fileName;
+        
+        InputStream arquivo;
+        arquivo = SimuladorCache.class.getResourceAsStream("arqBinario1_rw_10.dat");
+        DataInputStream input = new DataInputStream(arquivo);
         int nblokL1d, bsizeL1d, assL1d, nblokL1i, bsizeL1i, assL1i;
         int nblokL2, bsizeL2, assL2;
         Cache L1d, L1i, L2;
 
         Scanner scan = new Scanner(System.in);
-        //_fileName = scan.next();
         nblokL1d = scan.nextInt();
         bsizeL1d = scan.nextInt();
         assL1d = scan.nextInt();
@@ -82,22 +81,19 @@ public class SimuladorCache {
         L1i = new Cache(nblokL1i, bsizeL1i, assL1i);
         L2 = new Cache(nblokL2, bsizeL2, assL2);
 
-        try {
-            InputStream arquivo;
-            arquivo = SimuladorCache.class.getResourceAsStream("arqBinario1_rw_10.dat");
-            DataInputStream input = new DataInputStream(arquivo);
+        
 
-            int line;
+        try {
             int instruction;
             int end;
             int i = 0;
 
             do {
                 end = input.readInt();
-                System.out.println("Endereço: "+i+" -> "+end+"\n");
+                System.out.println("Endereço: " + i + " -> " + end + "\n");
                 instruction = input.readInt();
-                System.out.println("Instrução: "+i+" -> "+instruction+"\n");
-                
+                System.out.println("Instrução: " + i + " -> " + instruction + "\n");
+
                 i++;
                 if (instruction == 0) {
                     if (end > 100) {
@@ -105,48 +101,32 @@ public class SimuladorCache {
                         if (L1d.read(end) == -1 && L2.read(end) == -1) {
                             L1d.write(end);
                             L2.write(end);
-                        }
-                        else if (L1d.read(end) == -1 && L2.read(end) == 0) {
+                        } else if (L1d.read(end) == -1 && L2.read(end) == 0) {
                             L1d.write(end);
-                        }
-                        else L2.write(end);
-                    }
-                    
-                    else{
-                         if (L1i.read(end) == -1 && L2.read(end) == -1) {
-                            L1i.write(end);
+                        } else {
                             L2.write(end);
                         }
-                        else if (L1i.read(end) == -1 && L2.read(end) == 0) {
+                    } else {
+                        if (L1i.read(end) == -1 && L2.read(end) == -1) {
                             L1i.write(end);
+                            L2.write(end);
+                        } else if (L1i.read(end) == -1 && L2.read(end) == 0) {
+                            L1i.write(end);
+                        } else {
+                            L2.write(end);
                         }
-                        else L2.write(end);
                     }
-                }
-                else if (instruction == 1){
-                     if (end > 100) {
+                } else if (instruction == 1) {
+                    if (end > 100) {
                         L1d.write(end);
                         L2.write(end);
-                    }
-                    
-                    else{
-                         L1i.write(end);
-                         L2.write(end);
+                    } else {
+                        L1i.write(end);
+                        L2.write(end);
                     }
                 }
 
             } while (input.available() > 0);
-            /*while (input.available() > 0) {
-             line = input.readInt();
-             if (line == 0 || line == 1) {
-             instruction = line;
-             }else{ 
-             end = line;
-             }
-             if (end > 100) {
-                    
-             }
-             }*/
 
         } catch (FileNotFoundException ex) {
             System.out.println("Arquivo não encontrado");
@@ -154,21 +134,21 @@ public class SimuladorCache {
         } catch (IOException ex) {
             System.out.println("Problema na leitura do arquivo");
         }
-        
+
         System.out.println("****** L1 dados ******");
-            System.out.println(L1d.getRelatorio());
-            System.out.println("********************");
-            System.out.println("\n");
-            System.out.println("\n");
-            System.out.println("****** L1 instruções ******");
-            System.out.println(L1i.getRelatorio());
-            System.out.println("********************");
-            System.out.println("\n");
-            System.out.println("\n");
-            System.out.println("****** L2 ******");
-            System.out.println(L2.getRelatorio());
-            System.out.println("********************");
-            System.out.println("\n");
+        L1d.getRelatorio();
+        System.out.println("********************");
+        System.out.println("\n");
+        System.out.println("\n");
+        System.out.println("****** L1 instruções ******");
+        L1i.getRelatorio();
+        System.out.println("********************");
+        System.out.println("\n");
+        System.out.println("\n");
+        System.out.println("****** L2 ******");
+        L2.getRelatorio();
+        System.out.println("********************");
+        System.out.println("\n");
 
     }
 

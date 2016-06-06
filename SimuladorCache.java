@@ -24,7 +24,7 @@ public class SimuladorCache {
     public static void main(String[] args) {
         
         InputStream arquivo;
-        arquivo = SimuladorCache.class.getResourceAsStream("arqBinario1_rw_10.dat");
+        arquivo = SimuladorCache.class.getResourceAsStream("arqTeste/arqBinario1_rw_10.dat");
         DataInputStream input = new DataInputStream(arquivo);
         int nblokL1d, bsizeL1d, assL1d, nblokL1i, bsizeL1i, assL1i;
         int nblokL2, bsizeL2, assL2;

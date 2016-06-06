@@ -27,20 +27,9 @@ public class Cache {
     private int _nbits_tag;    //Numero bits Tag
     private int _conf_miss = 0, _cap_miss = 0, _comp_miss = 0; //Miss: Conflito, Capacidade, Compulsório
     private int _hit = 0;
-    private int _total_access = 0;
+    private float _total_access = 0;
     private int _nwrites = 0, _nreads = 0;
 
-    /* public Cache() {
-     _nblock = 1024;
-     _ass = 1;
-     _nsets = _nblock / _ass;
-     _bsize = 4;
-     _val = new int[_nsets];
-     _tag = new int[_nsets];
-     _cache_blocks = new BlockMem[_nblock / _ass][_ass];
-     calcBits();
-
-     }*/
     //As entradas podem ser feitas de forma básica.
     //Antes de criar o objeto a gente define na SimuladorCache
     //os valores padrão
@@ -50,12 +39,12 @@ public class Cache {
      * @param ass integer - Associatividade da cache
      */
     public Cache(int nblock, int bsize, int ass) {
-        this._nblock = nblock;
-        this._ass = ass;
-        this._nsets = this._nblock / this._ass; //A partir do número de blocos na cache é calculado o número de sets.
-        this._bsize = bsize;
-        this._val = new int[this._nsets][this._ass];
-        this._tag = new int[this._nsets][this._ass];
+        _nblock = nblock;
+        _ass = ass;
+        _nsets = _nblock / _ass; //A partir do número de blocos na cache é calculado o número de sets.
+        _bsize = bsize;
+        _val = new int[_nsets][_ass];
+        _tag = new int[_nsets][_ass];
         //_cache_blocks = new BlockMem[this._nsets][this._ass];
         calcBits();
         startValidade();
@@ -81,7 +70,6 @@ public class Cache {
      * @param end integer - Endereço passado
      * @return integer
      */
-    //Mudança do tipo para int
     //Retorno de valores para identificação da necessidade de escrita
     //Caso chame a escrita, escrever na outra cache de acordo com a política write through
     //Se hit -> retorna 0; Miss -> Necessidade de escrita -> retorna -1
@@ -126,6 +114,10 @@ public class Cache {
     }
 
     //Escrita feita após miss de leitura
+    /**
+     * 
+     * @param end integer
+     */
     public void write(int end) {
         int indice = (end / _nbits_offset) & (2 ^ (_nbits_indice - 1));
         int tag = (end / (_nbits_offset + _nbits_indice));
@@ -141,17 +133,34 @@ public class Cache {
         _val[indice][random_number] = 1;
         _tag[indice][random_number] = tag;
     }
+    
+    /**
+     * 
+     * @return float
+     */
+    private float getMissRate(){
+        return ((_comp_miss + _conf_miss + _cap_miss) / _total_access);
+    }
+    
+    /**
+     * 
+     * @return float
+     */
+    private float getHitRate(){
+        return (_hit / _total_access);
+    }
 
-    public String getRelatorio() {
-        return "Total de acessos: " + _total_access
+    public void getRelatorio() {
+        
+        System.out.println("Total de acessos: " + _total_access
                 + "\n" + "Total de escritas: " + _nwrites
                 + "\n" + "Total de leituras: " + _nreads
                 + "\n" + "Total de Hits: " + _hit
                 + "\n" + "Total Miss Compulsório: " + _comp_miss
                 + "\n" + "Total Miss Conflito: " + _conf_miss
                 + "\n" + "Total Miss Capacidade: " + _cap_miss
-                + "\n" + "Hit rate: " + _hit / _total_access
-                + "\n" + "Miss rate: " + (_comp_miss + _conf_miss + _cap_miss) / _total_access;
+                + "\n" + "Hit rate: " + getHitRate()
+                + "\n" + "Miss rate: " + getMissRate());
     }
     
     public static void main(String[] args){
@@ -171,7 +180,7 @@ public class Cache {
             }
         }
         
-        System.out.println(cache.getRelatorio());
+        cache.getRelatorio();
     }
 
 }

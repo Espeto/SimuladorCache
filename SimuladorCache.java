@@ -22,7 +22,7 @@ public class SimuladorCache {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
+
         InputStream arquivo;
         arquivo = SimuladorCache.class.getResourceAsStream("arqTeste/arqBinario1_rw_10.dat");
         DataInputStream input = new DataInputStream(arquivo);
@@ -81,39 +81,41 @@ public class SimuladorCache {
         L1i = new Cache(nblokL1i, bsizeL1i, assL1i);
         L2 = new Cache(nblokL2, bsizeL2, assL2);
 
-        
-
         try {
             int instruction;
             int end;
-            int i = 0;
 
             do {
                 end = input.readInt();
-                System.out.println("Endereço: " + i + " -> " + end + "\n");
                 instruction = input.readInt();
-                System.out.println("Instrução: " + i + " -> " + instruction + "\n");
 
-                i++;
                 if (instruction == 0) {
                     if (end > 100) {
                         //escrita = L1d.read(end);
-                        if (L1d.read(end) == -1 && L2.read(end) == -1) {
-                            L1d.write(end);
-                            L2.write(end);
-                        } else if (L1d.read(end) == -1 && L2.read(end) == 0) {
-                            L1d.write(end);
+                        if (L1d.read(end) == -1) {
+                            if (L2.read(end) == -1) {
+                                L1d.write(end);
+                                L2.write(end);
+                            } else if (L2.read(end) == 0) {
+                                L1d.write(end);
+                            }
                         } else {
-                            L2.write(end);
+                            if (L2.read(end) == -1) {
+                                L2.write(end);
+                            }
                         }
                     } else {
-                        if (L1i.read(end) == -1 && L2.read(end) == -1) {
-                            L1i.write(end);
-                            L2.write(end);
-                        } else if (L1i.read(end) == -1 && L2.read(end) == 0) {
-                            L1i.write(end);
+                        if (L1i.read(end) == -1) {
+                            if (L2.read(end) == -1) {
+                                L1i.write(end);
+                                L2.write(end);
+                            } else if (L2.read(end) == 0) {
+                                L1i.write(end);
+                            }
                         } else {
-                            L2.write(end);
+                            if (L2.read(end) == -1) {
+                                L2.write(end);
+                            }
                         }
                     }
                 } else if (instruction == 1) {
@@ -135,6 +137,7 @@ public class SimuladorCache {
             System.out.println("Problema na leitura do arquivo");
         }
 
+        System.out.println("\n");
         System.out.println("****** L1 dados ******");
         L1d.getRelatorio();
         System.out.println("********************");

@@ -84,6 +84,9 @@ public class SimuladorCache {
         try {
             int instruction;
             int end;
+            boolean needWriteL1i;
+            boolean needWriteL1d;
+            boolean needWriteL2;
 
             do {
                 end = input.readInt();
@@ -91,40 +94,43 @@ public class SimuladorCache {
 
                 if (instruction == 0) {
                     if (end > 100) {
-                        //escrita = L1d.read(end);
-                        if (L1d.read(end) == -1) {
-                            if (L2.read(end) == -1) {
-                                L1d.write(end);
-                                L2.write(end);
-                            } else if (L2.read(end) == 0) {
-                                L1d.write(end);
+                        needWriteL1d = L1d.read(end);
+                        needWriteL2 = L2.read(end);
+                        if (needWriteL1d) {
+                            if (needWriteL2) {
+                                L1d.write(end, true);
+                                L2.write(end, true);
+                            } else {
+                                L1d.write(end, true);
                             }
                         } else {
-                            if (L2.read(end) == -1) {
-                                L2.write(end);
+                            if (needWriteL2) {
+                                L2.write(end, true);
                             }
                         }
                     } else {
-                        if (L1i.read(end) == -1) {
-                            if (L2.read(end) == -1) {
-                                L1i.write(end);
-                                L2.write(end);
-                            } else if (L2.read(end) == 0) {
-                                L1i.write(end);
+                        needWriteL1i = L1i.read(end);
+                        needWriteL2 = L2.read(end);
+                        if (needWriteL1i) {
+                            if (needWriteL2) {
+                                L1i.write(end, true);
+                                L2.write(end, true);
+                            } else{
+                                L1i.write(end, true);
                             }
                         } else {
-                            if (L2.read(end) == -1) {
-                                L2.write(end);
+                            if (needWriteL2) {
+                                L2.write(end, true);
                             }
                         }
                     }
                 } else if (instruction == 1) {
                     if (end > 100) {
-                        L1d.write(end);
-                        L2.write(end);
+                        L1d.write(end, false);
+                        L2.write(end, false);
                     } else {
-                        L1i.write(end);
-                        L2.write(end);
+                        L1i.write(end, false);
+                        L2.write(end, false);
                     }
                 }
 

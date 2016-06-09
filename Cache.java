@@ -98,7 +98,6 @@ public class Cache {
                     if (i == _ass - 1) {
                         //Miss de conflito
                         _conf_miss++;
-                        _total_access--;
                         return true;
                     }
 

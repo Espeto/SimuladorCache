@@ -73,7 +73,7 @@ public class Cache {
     //Retorno de valores para identificação da necessidade de escrita
     //Caso chame a escrita, escrever na outra cache de acordo com a política write through
     //Se hit -> retorna 0; Miss -> Necessidade de escrita -> retorna -1
-    public int read(int end) {
+    public boolean read(int end) {
         int indice = (end / _nbits_offset) & (2 ^ (_nbits_indice - 1));
         int tag = (end / (_nbits_offset + _nbits_indice));
         int invalCount = 0;//Contador dos bits de validade. Se val = 0 -> contador++
@@ -93,13 +93,13 @@ public class Cache {
                 if (_tag[indice][i] == tag) {
                     //Hit
                     _hit++;
-                    return 0;
+                    return false;
                 } else {
                     if (i == _ass - 1) {
                         //Miss de conflito
                         _conf_miss++;
                         _total_access--;
-                        return -1;
+                        return true;
                     }
 
                 }
@@ -109,18 +109,19 @@ public class Cache {
         if (invalCount == _ass) {
             //Miss compulsório
             _comp_miss++;
-            _total_access--;
+            return true;
         }
 
-        return -1;//Identifica a necessidade de escrita
+        return false;//Identifica a necessidade de escrita
     }
 
     //Escrita feita após miss de leitura
     /**
-     * 
+     *
      * @param end integer
+     * @param writeAfterRead boolean
      */
-    public void write(int end) {
+    public void write(int end, boolean writeAfterRead) {
         int indice = (end / _nbits_offset) & (2 ^ (_nbits_indice - 1));
         int tag = (end / (_nbits_offset + _nbits_indice));
 
@@ -128,32 +129,34 @@ public class Cache {
         int random_number = rand.nextInt(_ass);
 
         //Ao chamar a escrita já é contabilizado um acesso
-        _nwrites++;
-        _total_access++;
+        if (!writeAfterRead) {
+            _nwrites++;
+            _total_access++;
+        }
 
         //Escrita feita em posição randomica
         _val[indice][random_number] = 1;
         _tag[indice][random_number] = tag;
     }
-    
+
     /**
-     * 
+     *
      * @return float
      */
-    private float getMissRate(){
+    private float getMissRate() {
         return ((_comp_miss + _conf_miss + _cap_miss) / _total_access);
     }
-    
+
     /**
-     * 
+     *
      * @return float
      */
-    private float getHitRate(){
+    private float getHitRate() {
         return (_hit / _total_access);
     }
 
     public void getRelatorio() {
-        
+
         System.out.println("Total de acessos: " + _total_access
                 + "\n" + "Total de escritas: " + _nwrites
                 + "\n" + "Total de leituras: " + _nreads
@@ -164,25 +167,4 @@ public class Cache {
                 + "\n" + "Hit rate: " + getHitRate()
                 + "\n" + "Miss rate: " + getMissRate());
     }
-    
-    public static void main(String[] args){
-        int[] endereco = new int[10];
-        Random random = new Random();
-        Cache cache = new Cache(1024, 4, 1);
-        int armazena;
-        
-        for (int i = 0; i < 10; i++) {
-            endereco[i] = random.nextInt(100);
-        }
-        
-        for (int i = 0; i < 10; i++) {
-            armazena = cache.read(endereco[i]);
-            if (armazena == -1) {
-                cache.write(endereco[i]);
-            }
-        }
-        
-        cache.getRelatorio();
-    }
-
 }

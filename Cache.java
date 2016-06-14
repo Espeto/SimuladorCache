@@ -68,11 +68,10 @@ public class Cache {
 
     /**
      * @param end integer - Endereço passado
-     * @return integer
+     * @return boolean - True, se houver necessidade de escrita, False caso contrário
      */
     //Retorno de valores para identificação da necessidade de escrita
     //Caso chame a escrita, escrever na outra cache de acordo com a política write through
-    //Se hit -> retorna 0; Miss -> Necessidade de escrita -> retorna -1
     public boolean read(int end) {
         int indice = (end / _nbits_offset) & (2 ^ (_nbits_indice - 1));
         int tag = (end / (_nbits_offset + _nbits_indice));
